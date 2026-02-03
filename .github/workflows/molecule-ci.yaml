@@ -17,13 +17,13 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install molecule[docker] yamllint ansible-lint ansible docker ansible-core molecule-docker testinfra pytest
-      - name: Run Molecule test
+      - name: Run Molecule test prepare vps role
         working-directory: ./roles/prepare-vps
         run: molecule test
         env:
           PY_COLORS : '1'
           ANSIBLE_FORCE_COLOR: '1'
-      - name: Run Molecule test
+      - name: Run Molecule test wireguard
         working-directory: ./roles/wireguard
         run: molecule test
         env:
