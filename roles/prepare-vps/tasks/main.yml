@@ -6,6 +6,9 @@
 - name: Generate ssh_key
   ansible.builtin.import_tasks: 'generate_ssh.yml'
   when: ssh_key_path == ""
+  vars:
+    ansible_user: local_user
+    ansible_become: no
 
 - name: Generate ssh_key
   ansible.builtin.import_tasks: 'create_user.yml'

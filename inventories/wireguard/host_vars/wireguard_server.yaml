@@ -2,3 +2,4 @@
 ansible_user: root
 ansible_password: ""
 prepare_vps: true
+local_user: rand

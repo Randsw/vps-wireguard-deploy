@@ -1,13 +1,4 @@
 ---
-- name: Show current user on delegated localhost
-  debug:
-    msg: "Current user on localhost: {{ ansible_user_id }}"
-  delegate_to: localhost
-- name: Show who is running on localhost
-  shell: whoami
-  register: whoami_result
-  delegate_to: localhost
-  
 - name: Create directory for SSH keys
   ansible.builtin.file:
     path: "{{ generate_ssh_folder }}"
