@@ -1,0 +1,42 @@
+---
+- name: Check if user exists
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ wg_user }}"
+  register: user_info
+  ignore_errors: true
+  changed_when: false
+
+- name: Create user if doesn't exist
+  ansible.builtin.user:
+    name: "{{ wg_user }}"
+    state: present
+    shell: /bin/bash
+    create_home: true
+    home: "/home/{{ wg_user }}"
+    system: false
+    uid: 1001  # Optional: specify UID
+    group: "{{ wg_user }}"  # Optional: create group with same name
+  when: user_info is failed or user_info.getent_passwd is undefined
+
+- name: Set authorized keys taken from path on controller node
+  ansible.posix.authorized_key:
+    user: "{{ wg_user }}"
+    state: present
+    key: file://{{ generate_ssh_folder }}/wg_vps.pub
+  when: ssh_key_path == ""
+
+- name: Set authorized keys taken from path on controller node
+  ansible.posix.authorized_key:
+    user: "{{ wg_user }}"
+    state: present
+    key: file://{{ ssh_key_path }}
+  when: ssh_key_path != ""
+
+- name: Set up passwordless sudo for SSH user
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/{{ wg_user }}
+    create: true
+    line: "{{ wg_user }} ALL=(ALL) NOPASSWD:ALL"
+    validate: 'visudo -cf %s'
+    mode: '0440'

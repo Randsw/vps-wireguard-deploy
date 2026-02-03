@@ -1,0 +1,12 @@
+- name: Configure SSH daemon security settings
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^{{ item.regexp }}"
+    line: "{{item.line}}"
+    state: "{{ item.state | default('present') }}"
+  loop:
+    # Disable root login
+    - {regexp: '^#?PermitRootLogin', line: 'PermitRootLogin no'}
+    # Disable password authentication
+    - {regexp: '^#?PasswordAuthentication', line: 'PasswordAuthentication no'}
+  notify: Restart sshd

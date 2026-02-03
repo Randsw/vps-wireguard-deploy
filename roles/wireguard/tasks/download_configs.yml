@@ -1,0 +1,8 @@
+---
+- name: Download client configs to the "wireguard_role/profiles/" folder on your local host
+  ansible.builtin.fetch:
+    src: "~/wg_clients/client_{{ item }}/wg0-client.conf"
+    dest: "{{ client_config_path }}/client_{{ item }}/"
+    flat: yes
+  loop: "{{ range(1, clients) | list }}"
+  tags: "wg_fetch"

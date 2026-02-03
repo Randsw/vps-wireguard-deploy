@@ -1,0 +1,22 @@
+---
+- name: Show current user on delegated localhost
+  debug:
+    msg: "Current user on localhost: {{ ansible_user_id }}"
+  delegate_to: localhost
+- name: Show who is running on localhost
+  shell: whoami
+  register: whoami_result
+  delegate_to: localhost
+  
+- name: Create directory for SSH keys
+  ansible.builtin.file:
+    path: "{{ generate_ssh_folder }}"
+  delegate_to: localhost
+
+- name: Generate RSA 4096 SSH key pair
+  community.crypto.openssh_keypair:
+    path: "{{ generate_ssh_folder }}/wg_vps"
+    type: rsa
+    size: 4096
+    force: false  # Set to true to regenerate if exists
+  delegate_to: localhost

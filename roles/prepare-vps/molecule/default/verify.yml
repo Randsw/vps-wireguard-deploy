@@ -1,0 +1,44 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    # Verify user exists
+    - name: Check if test user exists
+      ansible.builtin.shell:
+        cmd: "id {{ wg_user }}"
+      register: user_check
+      failed_when: user_check.rc != 0
+      changed_when: false
+    # Verify authorized_keys file
+    - name: Check authorized_keys file exists
+      ansible.builtin.stat:
+        path: "/home/{{ test_user }}/.ssh/authorized_keys"
+      register: auth_keys
+      failed_when: not auth_keys.stat.exists
+    # Verify SSH configuration
+    - name: Check SSH daemon is running
+      ansible.builtin.systemd:
+        name: sshd
+        state: started
+      check_mode: no
+      changed_when: false
+
+    - name: Verify root login is disabled
+      ansible.builtin.shell:
+        cmd: "grep -E '^PermitRootLogin\\s+no' /etc/ssh/sshd_config"
+      register: root_login_check
+      failed_when: root_login_check.rc != 0
+      changed_when: false
+
+    - name: Verify password authentication is disabled
+      ansible.builtin.shell:
+        cmd: "grep -E '^PasswordAuthentication\\s+no' /etc/ssh/sshd_config"
+      register: password_auth_check
+      failed_when: password_auth_check.rc != 0
+      changed_when: false
+
+    - name: Validate SSH configuration syntax
+      ansible.builtin.command:
+        cmd: sshd -t
+      changed_when: false

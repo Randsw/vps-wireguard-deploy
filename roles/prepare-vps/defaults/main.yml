@@ -1,0 +1,7 @@
+# Path for ssh key to
+ssh_key_path: ""
+
+# Folder where generate ssh keys is stored
+generate_ssh_folder: "~/.ssh"
+
+wg_user: "wgadmin"

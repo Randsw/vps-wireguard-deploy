@@ -1,0 +1,13 @@
+---
+- hosts: all
+  gather_facts: true
+  become: yes
+  roles:
+    - role: 'prepare-vps'
+      when: prepare_vps
+
+    - role: 'wireguard'
+      become: yes
+      become_user: {{ wg_user }}
+      tags: 'wireguard'
+

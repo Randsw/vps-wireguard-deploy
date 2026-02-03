@@ -1,0 +1,7 @@
+---
+skip_list:
+  - '306'
+  - '301'
+  - '305'
+warn_list:  # or 'skip_list' to silence them completely
+  - yaml  # Violations reported by yamllint

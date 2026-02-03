@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Update apt cache.
+      ansible.builtin.apt:
+        update_cache: yes
+      changed_when: false
+
+    - name: Install iptables
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - iptables
+        - iptables-persistent
+  roles:
+    - {role: '../../../wireguard', tags: 'wireguard'}

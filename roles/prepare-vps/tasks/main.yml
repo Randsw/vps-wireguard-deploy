@@ -1,0 +1,17 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Generate ssh_key
+  ansible.builtin.import_tasks: 'generate_ssh.yml'
+  when: ssh_key_path == ""
+
+- name: Generate ssh_key
+  ansible.builtin.import_tasks: 'create_user.yml'
+
+- name: Create swap if not exists
+  ansible.builtin.import_tasks: 'swap.yml'
+
+- name: Configure SSH
+  ansible.builtin.import_tasks: 'configure_ssh.yml'
