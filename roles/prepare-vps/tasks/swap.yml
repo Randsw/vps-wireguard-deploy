@@ -21,7 +21,7 @@
 - name: Create swap file if no swap is active
   ansible.builtin.shell:
     cmd: |
-      fallocate -l 2G /swap_space && \
+      dd if=/dev/zero of=/swap_space bs=2M count=1024 && \
       chmod 600 /swap_space && \
       mkswap /swap_space
     creates: /swap_space
@@ -31,10 +31,11 @@
 
 - name: Enable swap if file exists but not active
   ansible.builtin.command:
-    cmd: swapon "/swap_space"
+    cmd: swapon /swap_space
   when:
     - swap_current.stdout == ""
     - swap_file_stat.stat.exists
+    - ansible_virtualization_type != "docker"
   register: swap_enable
   changed_when: swap_enable.rc == 0  # Only changed if successful
 

@@ -16,21 +16,23 @@
     home: "/home/{{ wg_user }}"
     system: false
     uid: 1001  # Optional: specify UID
-    group: "{{ wg_user }}"  # Optional: create group with same name
   when: user_info is failed or user_info.getent_passwd is undefined
 
-- name: Set authorized keys taken from path on controller node
+- debug:
+    msg: "Путь к ключу: {{ generate_ssh_folder }}/wg_vps.pub"
+
+- name: Set authorized keys taken from path on controller node generated
   ansible.posix.authorized_key:
     user: "{{ wg_user }}"
     state: present
-    key: file://{{ generate_ssh_folder }}/wg_vps.pub
+    key: "{{ lookup('file', generate_ssh_folder + '/wg_vps.pub') }}"
   when: ssh_key_path == ""
 
-- name: Set authorized keys taken from path on controller node
+- name: Set authorized keys taken from path on controller node provided
   ansible.posix.authorized_key:
     user: "{{ wg_user }}"
     state: present
-    key: file://{{ ssh_key_path }}
+    key: "{{ lookup('file', ssh_key_path) }}"
   when: ssh_key_path != ""
 
 - name: Set up passwordless sudo for SSH user
