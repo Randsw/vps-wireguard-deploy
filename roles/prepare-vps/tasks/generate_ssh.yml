@@ -2,6 +2,7 @@
 - name: Create directory for SSH keys
   ansible.builtin.file:
     path: "{{ generate_ssh_folder }}"
+    state: directory
   delegate_to: localhost
 
 - name: Generate RSA 4096 SSH key pair
