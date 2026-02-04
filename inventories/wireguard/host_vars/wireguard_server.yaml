@@ -1,5 +1,5 @@
 ---
 ansible_user: root
-ansible_password: ""
+ansible_password: vps
 prepare_vps: true
 local_user: rand

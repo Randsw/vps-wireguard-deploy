@@ -10,4 +10,4 @@ vpn_port: '51820'
 # Declare the number of clients
 clients: 15
 
-client_config_path: '~/wireguard_role_sergey/profiles'
+client_config_path: '~/wireguard_role/profiles'

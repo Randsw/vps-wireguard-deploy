@@ -8,6 +8,5 @@
 
     - role: 'wireguard'
       become: yes
-      become_user: {{ wg_user }}
       tags: 'wireguard'
 
