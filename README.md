@@ -1,33 +1,63 @@
-# Deploy wireguard server on VPS and generate client keys
+# WireGuard VPS Deployer
 
-A cheap VPS hoster usually provide you only VPS IP address and root password.
+Automated Ansible playbooks to harden a fresh VPS and deploy a WireGuard VPN server with automated client configuration generation.
 
-Goal of this repository is prepare VPS for real world:) and deploy Wireguard.
+## 🚀 Quick Start
 
-## Configure
+Most cheap VPS providers only give you an **IP address** and a **root password**. This repository automates the transition from a "raw" server to a secured VPN gateway.
 
-Set VSP IP in `inventories/wireguard/hosts.yml`
-`ansible_host: 192.168.0.93`
+### 1. Host Connection
 
-Set root creadetials in `inventories/wireguard/host_vars/wireguard_server.yaml`
-`ansible_password: vps`
+Set your VPS IP address in `inventories/wireguard/hosts.yml`:
 
-If you dont want prepare harden your VSP set `prepare_vps` to false in 
-`inventories/wireguard/host_vars/wireguard_server.yaml`
+```yaml
+ansible_host: 192.168.0.93
+```
 
-Set your local user name in `inventories/wireguard/host_vars/wireguard_server.yaml`
-`local_user: vps`
-Its used to generate ssh key
+### 2. Authentication
 
-### Configure prepare VPS role
+Set your root credentials in `inventories/wireguard/host_vars/wireguard_server.yaml`:
 
-Prepare-vps:
-ssh_key_path:
-generate_ssh_folder:
-wg_user: "wgadmin"
+```yaml
+ansible_password: "your_root_password"
+```
 
-Wireguard:
-vpn_network
-vpn_port
-clients
-client_config_path
+## 🛠️ Configuration
+
+### Global Settings
+
+In `inventories/wireguard/host_vars/wireguard_server.yaml`:
+
+* **prepare_vps**: (bool) Set to `false` if you want to skip the hardening process.
+* **local_user**: Your local OS username (used for SSH keys generation).
+
+### Role: VPS Preparation (`roles/prepare-vps`)
+
+This role secures the server by creating a non-root sudo user and disabling root login and password-based SSH authentication. Configuration in `roles/prepare-vps/defaults/main.yml`:
+
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| **ssh_key_path** | Path to an existing public key to authorize. Generate keys if this var is empty string | `/home/user/.ssh/id_rsa.pub` |
+| **generate_ssh_folder** | Where to store new keys if generation is needed. | `~/.ssh` |
+| **wg_user** | The sudo user created to replace root access. | `wgadmin` |
+
+### Role: WireGuard Deployment  (`roles/wireguard`)
+
+Configuration in `roles/wireguard/defaults/main.yml`:
+
+| Name | Description | Default |
+| :--- | :--- | :--- |
+| **vpn_network** | Declare the VPN subnet | `10.203.200` |
+| **vpn_port** | The port the VPN server listens on for incoming connections. | `51820` |
+| **clients** | A number of client to generate configs for. | `15` |
+| **client_config_path** | Local filesystem path where client configurations are stored. | `~/wireguard_role/profiles` |
+
+## 📖 Usage
+
+Run the playbook:
+
+```bash
+ansible-playbook -i inventories/wireguard/hosts.yml deploy-wireguard-server.yaml
+```
+
+After completion, your client configurations will be available in the `client_config_path` directory.
