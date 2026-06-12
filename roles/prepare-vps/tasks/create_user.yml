@@ -18,9 +18,6 @@
     uid: 1001  # Optional: specify UID
   when: user_info is failed or user_info.getent_passwd is undefined
 
-- debug:
-    msg: "Путь к ключу: {{ generate_ssh_folder }}/wg_vps.pub"
-
 - name: Set authorized keys taken from path on controller node generated
   ansible.posix.authorized_key:
     user: "{{ wg_user }}"
@@ -42,3 +39,10 @@
     line: "{{ wg_user }} ALL=(ALL) NOPASSWD:ALL"
     validate: 'visudo -cf %s'
     mode: '0440'
+
+- name: Add user to sudo group
+  ansible.builtin.user:
+    name: "{{ wg_user }}"
+    groups: sudo
+    append: true
+  become: true
