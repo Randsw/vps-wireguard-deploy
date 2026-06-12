@@ -5,7 +5,7 @@
 vpn_network: '10.130.130'
 
 # Declare the VPN server port
-vpn_port: '58820'
+vpn_port: '51820'
 
 # Declare the number of clients
 clients: 15
