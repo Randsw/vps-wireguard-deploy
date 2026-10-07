@@ -40,9 +40,8 @@
     validate: 'visudo -cf %s'
     mode: '0440'
 
-- name: Add user to sudo group
+- name: Add SSH user to sudo group
   ansible.builtin.user:
     name: "{{ wg_user }}"
     groups: sudo
     append: true
-  become: true
